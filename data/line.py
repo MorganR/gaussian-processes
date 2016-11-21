@@ -11,11 +11,7 @@ def generate_line(d_min, d_max):
 class Line:
 	"""Represents a straight line as distance 'd' from the origin and angle 'theta' from the x-axis"""
 
-	def __init__(self):
-		self.d = 0
-		self.theta = 0
-
-	def __init__(self, d, theta):
+	def __init__(self, d=0, theta=0):
 		self.d = d
 		self.theta = theta
 
