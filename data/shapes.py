@@ -5,17 +5,6 @@ from math import sin, cos, sqrt, inf, degrees, pi, isclose, atan
 from data.cartesian import Point, Vector
 from utils.nums import is_zero
 
-def generate_line(d_min, d_max):
-    random.seed()
-    d = random.randint(d_min, d_max)
-    theta = random.uniform(0, 2*pi)
-    return Line(d, theta)
-
-def get_perp_line_through_point(line, point):
-    inv_l = Line(0, (line.theta + pi/2) % (2*pi))
-    inv_l.d = point.x*cos(inv_l.theta) + point.y*sin(inv_l.theta)
-    return inv_l
-
 class Line:
     """Represents a straight line as distance 'd' from the origin and angle
     'theta' from the x-axis"""
@@ -78,7 +67,19 @@ class Line:
             return Point(line.d/cos(line.theta), self.d/sin(self.theta))
 
     def __str__(self):
-        return "d: %d\ttheta (degrees): %f" % (self.d, degrees(self.theta))
+        return "Line with d: %d\ttheta (degrees): %f" \
+            % (self.d, degrees(self.theta))
+
+def generate_line(d_min, d_max):
+    random.seed()
+    d = random.randint(d_min, d_max)
+    theta = random.uniform(0, 2*pi)
+    return Line(d, theta)
+
+def get_perp_line_through_point(line, point):
+    inv_l = Line(0, (line.theta + pi/2) % (2*pi))
+    inv_l.d = point.x*cos(inv_l.theta) + point.y*sin(inv_l.theta)
+    return inv_l
 
 class Circle:
     """Represents a circle as a center Point and distance r from the center"""
@@ -98,3 +99,12 @@ class Circle:
             return None
         d_vect = point - self.center
         return atan(d_vect.y, d_vect.x)
+
+    def __str__(self):
+        return "Circle with radius %f and center %s" \
+            % (self.r, str(self.center))
+
+def generate_circle(r_min, r_max):
+    random.seed()
+    r = random.randint(r_min, r_max)
+    return Circle(r, Point(0,0))

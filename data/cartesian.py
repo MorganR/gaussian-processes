@@ -33,6 +33,9 @@ class Vector:
     def __ne__(self, other):
         return not self == other
 
+    def __str__(self):
+        return "(%f, %f)" % (self.x, self.y)
+
 class Point(Vector):
     """Represents a 2d cartesian point"""
 

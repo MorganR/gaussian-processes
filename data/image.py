@@ -6,8 +6,11 @@ from numpy import array, zeros, int8
 from data.cartesian import Point
 from data.shapes import get_perp_line_through_point
 
+def get_point_from_center(x, y, w, h):
+    return Point(x - (w - 1)/2, (h-1)/2 - y)
+
 def is_part_of_line(x, y, w, h, line):
-    p = Point(x - (w - 1)/2, (h-1)/2 - y)
+    p = get_point_from_center(x, y, w, h)
     perp_line = get_perp_line_through_point(line, p)
     intercept = line.get_intercept(perp_line)
     # if (x == 2 and (y >= 4 and y <= 6)):
@@ -24,3 +27,17 @@ def get_line_image(line, w=5, h=5):
             if is_part_of_line(x, y, w, h, line):
                 m[y, x] = 1
     return m
+
+def is_part_of_circle(x, y ,w, h, circle):
+    p = get_point_from_center(x, y, w, h)
+    d = (p - circle.center).mag()
+    return abs(d - circle.r) <= 0.5
+
+def get_circle_image(circle, w=5, h=5):
+    im = zeros((h, w), int8)
+
+    for x in range(0, w):
+        for y in range(0, h):
+            if is_part_of_circle(x, y, w, h, circle):
+                im[y, x] = 1
+    return im
