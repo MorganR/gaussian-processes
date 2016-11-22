@@ -3,11 +3,11 @@
 import math
 
 import data.cartesian
-import data.matrix_image
+import data.image
 
 def test_line_and_image(d, theta, w, h):
     l = data.cartesian.Line(d, theta)
-    im = data.matrix_image.get_line_image(l, w, h)
+    im = data.image.get_line_image(l, w, h)
     print(l)
     print(im)
 

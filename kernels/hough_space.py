@@ -5,7 +5,7 @@ from math import sqrt, radians
 from numpy import matrix
 
 from data.cartesian import Line
-from data.matrix_image import get_line_image
+from data.image import get_line_image
 
 def get_line_accumulator_array(image):
     shape = image.shape
