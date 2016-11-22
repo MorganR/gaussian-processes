@@ -1,7 +1,7 @@
 # This class will be used to generate random straight lines
 
 import random
-from math import pi, sin, cos, sqrt, inf
+from math import pi, sin, cos, sqrt, inf, degrees, isclose
 
 from data.errors import InterceptError
 
@@ -32,9 +32,11 @@ class Line:
 	"""Represents a straight line as distance 'd' from the origin and angle
 	'theta' from the x-axis"""
 
+	THETA_EQUIVALENCE = 1e-5
+
 	def __init__(self, d=0, theta=0):
 		self.d = d
-		self.theta = theta
+		self.theta = theta % (2*pi)
 
 	def get_slope(self):
 		return sin(self.theta) / cos(self.theta)
@@ -66,15 +68,24 @@ class Line:
 		return Point(x, y)
 
 	def get_intercept(self, line):
-		if (line.theta == self.theta or line.theta == ((self.theta + pi) % 2*pi)):
+		if (isclose(line.theta, self.theta) or isclose(line.theta, ((self.theta + pi) % (2*pi)))):
 			raise InterceptError("Cannot find intercept of parallel lines")
-		if sin(self.theta) != 0 and sin(line.theta) != 0:
+		if (not isclose(sin(self.theta), 0, abs_tol=Line.THETA_EQUIVALENCE) \
+				and not isclose(sin(line.theta), 0, abs_tol=Line.THETA_EQUIVALENCE)):
+			# print("solving with x since sin(s.theta): %f  and sin(l.theta): %f" % (sin(self.theta), sin(line.theta)))
 			return self._solve_with_x(line)
-		elif cos(self.theta) != 0 and cos(line.theta) != 0:
+		elif (not isclose(cos(self.theta), 0, abs_tol=Line.THETA_EQUIVALENCE) \
+				and not isclose(cos(line.theta),0, abs_tol=Line.THETA_EQUIVALENCE)):
+			# print("solving with y")
 			return self._solve_with_y(line)
 		# Else these lines are exactly horizontal and vertical
-		if sin(self.theta) == 0:
+		if isclose(sin(self.theta), 0, abs_tol=Line.THETA_EQUIVALENCE):
 			# self is vertical
+			# print("solving for vertical line")
 			return Point(self.d/cos(self.theta), line.d/sin(line.theta))
 		else:
+			# print("solving for horizontal line")
 			return Point(line.d/cos(line.theta), self.d/sin(self.theta))
+
+	def __str__(self):
+		return "d: %d\ttheta (degrees): %f" % (self.d, degrees(self.theta))
