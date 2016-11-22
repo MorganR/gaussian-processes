@@ -3,6 +3,7 @@ import random
 from math import sin, cos, sqrt, inf, degrees, pi, isclose, atan
 
 from data.cartesian import Point, Vector
+from utils.nums import is_zero
 
 def generate_line(d_min, d_max):
     random.seed()
@@ -18,8 +19,6 @@ def get_perp_line_through_point(line, point):
 class Line:
     """Represents a straight line as distance 'd' from the origin and angle
     'theta' from the x-axis"""
-
-    THETA_EQUIVALENCE = 1e-5
 
     def __init__(self, d=0, theta=0):
         self.d = d
@@ -61,16 +60,16 @@ class Line:
     def get_intercept(self, line):
         if (self.is_parallel(line)):
             return None
-        if (not isclose(sin(self.theta), 0, abs_tol=Line.THETA_EQUIVALENCE) \
-                and not isclose(sin(line.theta), 0, abs_tol=Line.THETA_EQUIVALENCE)):
+        if (not is_zero(sin(self.theta)) \
+                and not is_zero(sin(line.theta))):
             # print("solving with x since sin(s.theta): %f  and sin(l.theta): %f" % (sin(self.theta), sin(line.theta)))
             return self._solve_with_x(line)
-        elif (not isclose(cos(self.theta), 0, abs_tol=Line.THETA_EQUIVALENCE) \
-                and not isclose(cos(line.theta),0, abs_tol=Line.THETA_EQUIVALENCE)):
+        elif (not is_zero(cos(self.theta)) \
+                and not is_zero(cos(line.theta))):
             # print("solving with y")
             return self._solve_with_y(line)
         # Else these lines are exactly horizontal and vertical
-        if isclose(sin(self.theta), 0, abs_tol=Line.THETA_EQUIVALENCE):
+        if is_zero(sin(self.theta)):
             # self is vertical
             # print("solving for vertical line")
             return Point(self.d/cos(self.theta), line.d/sin(line.theta))
