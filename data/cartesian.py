@@ -40,22 +40,13 @@ class Point(Vector):
 		super().__init__(x, y)
 
 	def __add__(self, other):
-		if isinstance(other, Point):
+		if isinstance(other, Vector) and not isinstance(other, Point):
 			return Point(self.x + other.x, self.y + other.y)
 		else:
 			return super().__add__(other)
 
 	def __sub__(self, other):
-		if isinstance(other, Point):
-			raise TypeError("Cannot subtract something that isn't a Point from a Point")
-		return Point(self.x - other.x, self.y - other.y)
+		if isinstance(other, Vector) and not isinstance(other, Point):
+			return Point(self.x - other.x, self.y - other.y)
+		return super().__sub__(other)
 
-	def __eq__(self, other):
-		if not isinstance(other, Point):
-			raise TypeError("Cannot subtract something that isn't a Point from a Point")
-		return isclose(self.x, other.x) and isclose(self.y, other.y)
-
-	def __ne__(self, other):
-		if not isinstance(other, Point):
-			raise TypeError("Cannot subtract something that isn't a Point from a Point")
-		return not self == other
