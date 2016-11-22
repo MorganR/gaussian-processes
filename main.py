@@ -12,7 +12,7 @@ print(im)
 acc_array = get_line_accumulator_array(im)
 print(acc_array)
 
-c = data.shapes.generate_circle(2,5)
+c = data.shapes.generate_circle(2, 4, 0, 2)
 print(c)
 c_im = data.image.get_circle_image(c, 11, 11)
 print(c_im)

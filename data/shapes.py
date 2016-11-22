@@ -104,7 +104,21 @@ class Circle:
         return "Circle with radius %f and center %s" \
             % (self.r, str(self.center))
 
-def generate_circle(r_min, r_max):
+def generate_circle(r_min, r_max, offset_min=0, offset_max=0):
+    """Generate a random circle with integer radius between r_min and r_max,
+    and with a center with abs(x) and abs(y) between offset_min and offset_max"""
+
+    if (r_min < 0 or r_max < 0 or offset_min < 0 or offset_max < 0):
+        raise AssertionError("All args to generate_circle must be >= 0")
+
     random.seed()
     r = random.randint(r_min, r_max)
-    return Circle(r, Point(0,0))
+    x_off = random.randint(0, offset_max - offset_min) + offset_min
+    y_off = random.randint(0, offset_max - offset_min) + offset_min
+
+    if random.randint(0, 1) == 1:
+        x_off = x_off*(-1)
+    if random.randint(0, 1) == 1:
+        y_off = y_off*(-1)
+
+    return Circle(r, Point(x_off, y_off))
