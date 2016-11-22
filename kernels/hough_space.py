@@ -14,10 +14,10 @@ def get_line_accumulator_array(image):
 
     d_max = sqrt(image_h*image_h + image_w*image_w)/2
     d_max = int(round(d_max))
-    acc_array = matrix([[0 for x in range(0, 35)] for y in range(d_max)])
+    acc_array = matrix([[0 for x in range(0, 36)] for y in range(d_max)])
 
     for d in range(d_max):
-        for alpha in range(0, 35):
+        for alpha in range(0, 36):
             theta = radians(alpha*10)
             line = Line(d, theta)
             line_image = get_line_image(line, image_w, image_h)
