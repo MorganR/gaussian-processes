@@ -4,20 +4,18 @@ from math import sin, cos
 from numpy import array, zeros, int8
 
 from data.cartesian import Point
-from data.shapes import get_perp_line_through_point
+import data.shapes as shapes
 
 def get_point_from_center(x, y, w, h):
     return Point(x - (w - 1)/2, (h-1)/2 - y)
 
-def is_part_of_line(x, y, w, h, line):
+def get_dist_from_line(x, y, w, h, line):
     p = get_point_from_center(x, y, w, h)
-    perp_line = get_perp_line_through_point(line, p)
-    intercept = line.get_intercept(perp_line)
-    # if (x == 2 and (y >= 4 and y <= 6)):
-    #     print("(%d, %d) -> point (%f, %f)" % (x, y, p.x, p.y))
-    #     print(perp_line)
-    #     print("intercept (%f, %f) with dist %f" % (intercept.x, intercept.y, p.calc_distance(intercept)))
-    return (p-intercept).mag() <= 0.5
+    return line.get_dist_from_line(p)
+
+def is_part_of_line(x, y, w, h, line):
+    d = get_dist_from_line(x, y, w, h, line)
+    return abs(d) <= 0.5
 
 def get_line_image(line, w=5, h=5):
     m = zeros((h, w), int8)

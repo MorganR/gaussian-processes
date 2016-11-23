@@ -30,6 +30,9 @@ class Line:
             return None
         return (self.d - x*cos(self.theta))/sin(self.theta)
 
+    def get_dist_from_line(self, point):
+        return point.x*cos(self.theta) + point.y*sin(self.theta) - self.d
+
     def is_parallel(self, line):
         return isclose(line.theta, self.theta) \
             or isclose(line.theta, ((self.theta + pi) % (2*pi)))
