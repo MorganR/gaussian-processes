@@ -2,7 +2,8 @@
 import numpy as np
 import GPflow
 
-from data.image import get_xyz_space
+from data.image import get_xyz_space, get_center_point
+from gp.models.linear import Linear
 
 def get_model_x(image_xyz):
     return np.stack((image_xyz[0], image_xyz[1]), axis=-1)
@@ -17,6 +18,18 @@ def fit_model(image, kern=GPflow.kernels.RBF(2)):
     pixel_vals = get_model_y(flat_z)
 
     m = GPflow.gpr.GPR(pixel_xy, pixel_vals, kern=kern)
+
+    m.optimize()
+
+    return m
+
+def fit_linear_model(image):
+    flat_x, flat_y, flat_z = get_xyz_space(image)
+
+    pixel_xy = get_model_x([flat_x, flat_y])
+    pixel_vals = get_model_y(flat_z)
+
+    m = Linear(pixel_xy, pixel_vals, get_center_point(image))
 
     m.optimize()
 

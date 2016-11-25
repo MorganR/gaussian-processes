@@ -5,6 +5,10 @@ import numpy as np
 
 from data.cartesian import Point
 
+def get_center_point(image):
+    h, w = image.shape
+    return Point((w-1)/2, (h-1)/2)
+
 def get_point_from_center(x, y, w, h):
     return Point(x - (w - 1)/2, (h-1)/2 - y)
 

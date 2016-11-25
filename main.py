@@ -18,7 +18,15 @@ print(acc_array)
 
 model = gp.image_fitting.fit_model(im)
 
+print(model)
+
 utils.plots.plot_image_and_model(im, model)
+
+model2 = gp.image_fitting.fit_linear_model(im)
+
+print(model2)
+
+utils.plots.plot_image_and_model(im, model2)
 
 c = data.shapes.generate_circle(2,4,0,2)
 print(c)
