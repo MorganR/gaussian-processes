@@ -1,15 +1,14 @@
 # Main test file
-from mnist import Mnist
+from mnist import MNIST
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 
-test = Mnist()
+mnist = MNIST()
 
-print(test)
+print(mnist)
 
-plt.imshow(test.train_images[0,:,:], 'Greys')
-plt.title(test.train_labels[0])
+plt.imshow(mnist.train_images[0,:,:], 'Greys')
+plt.title(mnist.train_labels[0])
 plt.show()
-plt.imshow(test.train_images[1,:,:], 'Greys')
-plt.title(test.train_labels[1])
+
+plt.imshow(mnist.train_ordered[2][0,:,:], 'Greys')
 plt.show()
