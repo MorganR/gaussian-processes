@@ -10,7 +10,7 @@ def get_center_point(image):
     return Point((w-1)/2, (h-1)/2)
 
 def get_point_from_center(x, y, w, h):
-    return Point(x - (w - 1)/2, (h-1)/2 - y)
+    return Point(x - (w - 1)/2, y - (h-1)/2)
 
 def get_dist_from_line(x, y, w, h, line):
     p = get_point_from_center(x, y, w, h)
