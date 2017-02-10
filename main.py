@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import GPflow
 import time
+from model_tester import ModelTester
+from gp.kernels.image import Image as my_image
 
 mnist = MNIST()
 
@@ -37,24 +39,18 @@ m = GPflow.vgp.VGP(
     mean_function=constant_mean,
     num_latent=num_digits)
 
-t_start = time.time()
+vgp_tester = ModelTester(mnist, m)
+vgp_tester.optimize()
+vgp_tester.test(5)
 
-m.optimize(maxiter=5000)
-
-t_end = time.time()
-
-print('Optimization completed in {} seconds'.format(t_end - t_start))
-
-num_test = 6
-X_test = mnist.test_images[0:num_test, :, :].reshape((num_test), mnist.test_rows*mnist.test_cols) \
-    .astype(np.float64) / 255
-Y_test = mnist.test_labels[0:num_test].astype(np.int32)
-
-mu, var = m.predict_f(X_test)
-p, _ = m.predict_y(X_test)
-
-for i in range(0, num_test):
-    print("Image {}, Digit {}".format(i, Y_test[i]))
-    for c in range(m.likelihood.num_classes):
-        # print('\tmean_{}: {}, variance_{}: {}'.format(c, mu[i,c], c, var[i,c]))
-        print('\tprobability_{}: {}'.format(c, p[i,c]))
+# m2 = GPflow.vgp.VGP(
+#     X,
+#     Y,
+#     kern=my_image(input_dim=(mnist.train_rows * mnist.train_cols)),
+#     likelihood=GPflow.likelihoods.MultiClass(num_digits),
+#     mean_function=constant_mean,
+#     num_latent=num_digits)
+#
+# my_tester = ModelTester(mnist,m2)
+# my_tester.optimize()
+# my_tester.test(5)
