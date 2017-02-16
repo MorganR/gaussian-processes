@@ -20,7 +20,7 @@ print(mnist)
 
 # Setup GP data
 num_digits = 10
-num_images_per_digit = 11
+num_images_per_digit = 150
 X = np.zeros((num_digits * num_images_per_digit, mnist.train_rows * mnist.train_cols), dtype=np.float64)
 Y = np.zeros((num_digits * num_images_per_digit), dtype=np.int32)
 for i in range(0, num_images_per_digit):
@@ -30,6 +30,8 @@ for i in range(0, num_images_per_digit):
 
 constant_mean = GPflow.mean_functions.Constant(c=0.1)
 constant_mean.fixed = False
+
+print('Testing against {} images for each digit.'.format(num_images_per_digit))
 
 m = GPflow.vgp.VGP(
     X,
@@ -41,7 +43,7 @@ m = GPflow.vgp.VGP(
 
 vgp_tester = ModelTester(mnist, m)
 vgp_tester.optimize()
-vgp_tester.test(5)
+vgp_tester.test(10000)
 
 # m2 = GPflow.vgp.VGP(
 #     X,
