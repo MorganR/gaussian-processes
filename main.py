@@ -11,16 +11,16 @@ mnist = MNIST()
 
 print(mnist)
 
-# plt.imshow(mnist.train_images[0,:,:], 'Greys')
-# plt.title(mnist.train_labels[0])
-# plt.show()
-#
-# plt.imshow(mnist.train_ordered[2][0,:,:], 'Greys')
-# plt.show()
+# mnist.rotate_each_image()
+
+# for i in range(0, 5):
+#     plt.imshow(mnist.train_ordered[5][i], 'Greys')
+#     plt.title(mnist.train_labels[i])
+#     plt.show()
 
 # Setup GP data
 num_digits = 10
-num_images_per_digit = 150
+num_images_per_digit = 25
 X = np.zeros((num_digits * num_images_per_digit, mnist.train_rows * mnist.train_cols), dtype=np.float64)
 Y = np.zeros((num_digits * num_images_per_digit), dtype=np.int32)
 for i in range(0, num_images_per_digit):
