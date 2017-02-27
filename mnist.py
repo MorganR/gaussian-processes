@@ -12,7 +12,7 @@ class MNIST:
             self.train_rows = struct.unpack(">I",image_file.read(4))[0]
             self.train_cols = struct.unpack(">I",image_file.read(4))[0]
 
-        self.train_images = np.memmap('train-images.idx3-ubyte', '>B', 'r', offset=16, shape=(self.train_num, self.train_rows, self.train_cols))
+        self.train_images = np.memmap('train-images.idx3-ubyte', '>B', 'c', offset=16, shape=(self.train_num, self.train_rows, self.train_cols))
         self.train_labels = np.memmap('train-labels.idx1-ubyte', '>B', 'r', offset=8, shape=(self.train_num))
         self._order_training_sets()
 
@@ -22,7 +22,7 @@ class MNIST:
             self.test_rows = struct.unpack(">I",test_file.read(4))[0]
             self.test_cols = struct.unpack(">I",test_file.read(4))[0]
 
-        self.test_images = np.memmap('t10k-images.idx3-ubyte', '>B', 'r', offset=16, shape=(self.test_num, self.test_rows, self.test_cols))
+        self.test_images = np.memmap('t10k-images.idx3-ubyte', '>B', 'c', offset=16, shape=(self.test_num, self.test_rows, self.test_cols))
         self.test_labels = np.memmap('t10k-labels.idx1-ubyte', '>B', 'r', offset=8, shape=(self.test_num))
 
         print('Done importing.')
@@ -35,6 +35,29 @@ class MNIST:
             '\tMagic: {}, Number of Images: {}, Image Shape: ({}, {})\n'.format(
                 self.test_magic, self.test_num, self.test_rows, self.test_cols)
             )
+
+    def rotate_each_image(self):
+        for i in range(0, 10):
+            times_90 = 0
+            for j in range(0, len(self.train_ordered[i])):
+                self.train_ordered[i][j,:,:] = np.rot90(self.train_ordered[i][j,:,:], times_90)
+                times_90 = (times_90 + 1) % 4
+        times_90 = 0
+        for i in range(0, self.test_num):
+            self.test_images[i,:,:] = np.rot90(self.test_images[i,:,:], times_90)
+            times_90 = (times_90 + 1) % 4
+
+
+    def undo_image_rotation(self):
+        for i in range(0, 10):
+            times_90 = 0
+            for j in range(0, len(self.train_ordered[i])):
+                self.train_ordered[i][j,:,:] = np.rot90(self.train_ordered[i][j,:,:], -times_90)
+                times_90 = (times_90 + 1) % 4
+        times_90 = 0
+        for i in range(0, self.test_num):
+            self.test_images[i,:,:] = np.rot90(self.test_images[i,:,:], -times_90)
+            times_90 = (times_90 + 1) % 4
 
     def _order_training_sets(self):
         self.train_ordered = []
