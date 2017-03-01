@@ -1,5 +1,6 @@
 # Main test file
 from mnist import MNIST
+from mnist_pca import MnistPca
 import numpy as np
 import matplotlib.pyplot as plt
 import GPflow
@@ -20,39 +21,56 @@ print(mnist)
 
 # Setup GP data
 num_digits = 10
-num_images_per_digit = 25
-X = np.zeros((num_digits * num_images_per_digit, mnist.train_rows * mnist.train_cols), dtype=np.float64)
-Y = np.zeros((num_digits * num_images_per_digit), dtype=np.int32)
-for i in range(0, num_images_per_digit):
-    for y in range(0, num_digits):
-        Y[i + i*y] = y
-        X[i + i*y] = mnist.train_ordered[y][i, :, :].flatten().astype(np.float64) / 255
+num_images_per_digit = 0
+
+num_dimensions = 100
+mnist_pca = MnistPca(mnist, num_dimensions)
+X = mnist_pca.X
+Y = mnist_pca.Y
+# num_dimensions = mnist.train_rows*mnist.train_cols
+# X, Y = mnist.get_flattened_train_data(num_images_per_digit)
 
 constant_mean = GPflow.mean_functions.Constant(c=0.1)
 constant_mean.fixed = False
 
-print('Testing against {} images for each digit.'.format(num_images_per_digit))
+inducing_offset = 500
+inducing_inputs = X[::inducing_offset].copy()
+num_images = X.shape[0]
+num_inducing_inputs = int(num_images / inducing_offset)
 
-m = GPflow.vgp.VGP(
+# from mpl_toolkits.mplot3d import Axes3D
+# import matplotlib.cm as cm
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# colors = cm.rainbow(np.linspace(0, 1, num_digits))
+
+# for i,c in zip(np.unique(Y), colors):
+#     ax.plot(X[Y==i,0], X[Y==i,1], zs=X[Y==i,2], linestyle='', marker='o', label=i, c=c)
+
+# plt.legend()
+# plt.show()
+
+
+print('Training against {} images using {} inducing inputs.'.format(num_images, inducing_inputs.shape[0]))
+
+m = GPflow.svgp.SVGP(
     X,
     Y,
-    kern=GPflow.kernels.RBF(input_dim=(mnist.train_rows * mnist.train_cols)),
+    kern=GPflow.kernels.RBF(input_dim=num_dimensions),
     likelihood=GPflow.likelihoods.MultiClass(num_digits),
-    mean_function=constant_mean,
+    # mean_function=constant_mean,
+    Z=inducing_inputs,
     num_latent=num_digits)
+m.Z.fixed = True
 
-vgp_tester = ModelTester(mnist, m)
-vgp_tester.optimize()
-vgp_tester.test(10000)
-
-# m2 = GPflow.vgp.VGP(
+# m = GPflow.vgp.VGP(
 #     X,
 #     Y,
-#     kern=my_image(input_dim=(mnist.train_rows * mnist.train_cols)),
+#     kern=GPflow.kernels.RBF(input_dim=num_dimensions),
 #     likelihood=GPflow.likelihoods.MultiClass(num_digits),
 #     mean_function=constant_mean,
 #     num_latent=num_digits)
-#
-# my_tester = ModelTester(mnist,m2)
-# my_tester.optimize()
-# my_tester.test(5)
+
+vgp_tester = ModelTester(mnist_pca, m)
+vgp_tester.optimize()
+vgp_tester.test(10000)
