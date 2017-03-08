@@ -21,10 +21,10 @@ print(mnist)
 
 # Setup GP data
 num_digits = 10
-num_images_per_digit = 0
+num_images_per_digit = 15
 
-num_dimensions = 100
-mnist_pca = MnistPca(mnist, num_dimensions)
+num_dimensions = 2
+mnist_pca = MnistPca(mnist, num_dimensions, num_images_per_digit)
 X = mnist_pca.X
 Y = mnist_pca.Y
 # num_dimensions = mnist.train_rows*mnist.train_cols
@@ -33,7 +33,7 @@ Y = mnist_pca.Y
 constant_mean = GPflow.mean_functions.Constant(c=0.1)
 constant_mean.fixed = False
 
-inducing_offset = 500
+inducing_offset = 5
 inducing_inputs = X[::inducing_offset].copy()
 num_images = X.shape[0]
 num_inducing_inputs = int(num_images / inducing_offset)
@@ -46,6 +46,12 @@ num_inducing_inputs = int(num_images / inducing_offset)
 
 # for i,c in zip(np.unique(Y), colors):
 #     ax.plot(X[Y==i,0], X[Y==i,1], zs=X[Y==i,2], linestyle='', marker='o', label=i, c=c)
+
+# import matplotlib.cm as cm
+# colors = cm.rainbow(np.linspace(0, 1, num_digits))
+
+# for i,c in zip(np.unique(Y), colors):
+#     plt.plot(X[Y==i,0], X[Y==i,1], linestyle='', marker='o', c=c, label=i)
 
 # plt.legend()
 # plt.show()
@@ -71,6 +77,7 @@ m.Z.fixed = True
 #     mean_function=constant_mean,
 #     num_latent=num_digits)
 
-vgp_tester = ModelTester(mnist_pca, m)
-vgp_tester.optimize()
-vgp_tester.test(10000)
+m_test = ModelTester(mnist_pca, m)
+m_test.optimize()
+m_test.test(10000)
+m_test.visualize_density()
