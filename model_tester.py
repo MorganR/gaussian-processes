@@ -2,6 +2,7 @@
 
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 
 class ModelTester():
     def __init__(self, data, model):
@@ -53,9 +54,22 @@ class ModelTester():
                 100*(almost_correct[i]/all_guesses[i]),
                 100*(almost_wrong[i]/all_guesses[i])))
 
-    def visualize_density(self):
-        mu, var = self.model.predict_f(self.data.X_test[:1])
-        samples = self.model.predict_f_samples(self.data.X_test[:1], 3)
-        print(mu)
-        print(var)
-        print(samples)
+    def visualize_density(self, axes):
+        # mu, var = self.model.predict_f(self.data.X_test[:1])
+        # samples = self.model.predict_f_samples(self.data.X_test[:1], 3)
+        # print(mu)
+        # print(var)
+        # print(samples)
+        xlim = axes[0,0].get_xlim()
+        ylim = axes[0,0].get_ylim()
+        nGrid = 50
+        xspaced = np.linspace( xlim[0], xlim[1], nGrid )
+        yspaced = np.linspace( ylim[0], ylim[1], nGrid )
+        xx, yy = np.meshgrid( xspaced, yspaced )
+        Xplot = np.vstack((xx.flatten(),yy.flatten())).T
+        p, var = self.model.predict_y(Xplot)
+        for i in np.arange(0, 10):
+            r = int((i) / axes.shape[1])
+            c = i - r*(axes.shape[1])
+            axes[r,c].contour(xx, yy, p[:,i].reshape(*xx.shape), [0.33, 0.66], colors='k', linewidths=1.2, zorder=100)
+            axes[r,c].set_title('{}'.format(i))
