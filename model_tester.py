@@ -36,6 +36,7 @@ class ModelTester():
         t_end = time.time()
         self.optimization_time = t_end-t_start
         print('Optimization completed in {} seconds'.format(self.optimization_time))
+        print(self.model.kern)
 
     def test(self, num_test=5):
         # mu, var = self.model.predict_f(X_test)
@@ -49,19 +50,22 @@ class ModelTester():
         wrong_guesses = np.zeros(self.num_test_classes, dtype=np.int32)
         almost_correct = np.zeros(self.num_test_classes, dtype=np.int32)
         almost_wrong = np.zeros(self.num_test_classes, dtype=np.int32)
+        unique_y = np.sort(np.unique(self.data.y))
         for i in range(0, num_test):
             Y_true = self.data.y_test[i]
-            all_guesses[Y_true] += 1
-            true_prob = p[i, Y_true]
-            true_var = var[i, Y_true]
+            Y_idx = np.argwhere(unique_y==Y_true)
+            Y_idx = Y_idx[0]
+            all_guesses[Y_idx] += 1
+            true_prob = p[i, Y_idx]
+            true_var = var[i, Y_idx]
             if (Y_guess[i] != Y_true):
-                wrong_guesses[Y_true] += 1
+                wrong_guesses[Y_idx] += 1
                 highest_prob = p[i, Y_guess[i]]
                 if highest_prob < (true_prob + true_var):
-                    almost_correct[Y_true] += 1
+                    almost_correct[Y_idx] += 1
             else: # guess is correct
-                if (np.any(p[i,np.arange(self.num_test_classes)!=Y_true] > (true_prob - true_var))):
-                    almost_wrong[Y_true] += 1
+                if (np.any(p[i,np.arange(self.num_test_classes)!=Y_idx] > (true_prob - true_var))):
+                    almost_wrong[Y_idx] += 1
 
 
         print('Tested against {} digits with {:.2f}% accuracy'.format(
@@ -69,7 +73,7 @@ class ModelTester():
         for i in range(0,self.num_test_classes):
             print('\tTested {:d} {}s with {:.2f}% + {:.2f}% - {:.2f}% accuracy'.format(
                 all_guesses[i], 
-                i,
+                unique_y[i],
                 100*(all_guesses[i] - wrong_guesses[i])/all_guesses[i],
                 100*(almost_correct[i]/all_guesses[i]),
                 100*(almost_wrong[i]/all_guesses[i])))
