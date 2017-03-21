@@ -19,6 +19,15 @@ class ModelTester():
         self.num_test_classes = np.unique(data.y_test).size
         self.has_densities = False
 
+    def import_old(self, model_str):
+        model_shaped_thing = import_model_tester(model_str)
+        self.data = model_shaped_thing.data
+        self.model = model_shaped_thing.model
+        self.num_classes = np.unique(self.data.y).size
+        self.num_test_classes = np.unique(self.data.y_test).size
+        self.has_densities = False
+        self.optimization_time = model_shaped_thing.optimization_time
+
     def export(self, title):
         filename = 'models/'+title+'.pkl'
         num_existing = 0
