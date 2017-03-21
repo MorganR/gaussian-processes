@@ -9,13 +9,13 @@ class VgpTester(ModelTester):
         self.kern_id = kern_id
 
         if kern_id == 'rbf':
-            kernel = GPflow.kernels.RBF(input_dim=self.num_dimensions, ARD=True, lengthscales=0.1*np.ones(self.num_dimensions))
+            kernel = GPflow.kernels.RBF(input_dim=self.num_dimensions, ARD=True)
         elif kern_id == 'm12':
-            kernel = GPflow.kernels.Matern12(input_dim=self.num_dimensions, ARD=True, lengthscales=0.1*np.ones(self.num_dimensions))
+            kernel = GPflow.kernels.Matern12(input_dim=self.num_dimensions, ARD=True)
         elif kern_id == 'm32':
-            kernel = GPflow.kernels.Matern32(input_dim=self.num_dimensions, ARD=True, lengthscales=0.1*np.ones(self.num_dimensions))
+            kernel = GPflow.kernels.Matern32(input_dim=self.num_dimensions, ARD=True)
         elif kern_id == 'm52':
-            kernel = GPflow.kernels.Matern52(input_dim=self.num_dimensions, ARD=True, lengthscales=0.1*np.ones(self.num_dimensions))
+            kernel = GPflow.kernels.Matern52(input_dim=self.num_dimensions, ARD=True)
 
         model = GPflow.vgp.VGP(
             data.x,
