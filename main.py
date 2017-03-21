@@ -67,7 +67,7 @@ for num_per_digit in num_per_digits:
     fig.suptitle('GP Classification on 2D Data\nUsing {} Images with VGP'.format(
         data.y.size
     ))
-    # fig.set_size_inches(16, 8)
-    # fig.subplots_adjust(top=0.89, bottom=0.05)
+    fig.set_size_inches(7, 4)
+    fig.subplots_adjust(top=0.8, bottom=0.05)
     fig.savefig('vgp-{}c-{}.png'.format(len(digits), data.y.size))
     plt.show()
