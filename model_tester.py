@@ -67,16 +67,20 @@ class ModelTester():
                 if (np.any(p[i,np.arange(self.num_test_classes)!=Y_idx] > (true_prob - true_var))):
                     almost_wrong[Y_idx] += 1
 
+        right_ratios = almost_correct/all_guesses
+        wrong_ratios = almost_wrong/all_guesses
+        total_positive_error = np.sqrt(np.sum((all_guesses*right_ratios/num_test)**2))
+        total_negative_error = np.sqrt(np.sum((all_guesses*wrong_ratios/num_test)**2))
 
-        print('Tested against {} digits with {:.2f}% accuracy'.format(
-            num_test, 100*(num_test-wrong_guesses.sum())/num_test))
+        print('Tested against {} digits with {:.2f}% + {:.2f}% - {:.2f}% accuracy'.format(
+            num_test, 100*(num_test-wrong_guesses.sum())/num_test, 100*total_positive_error, 100*total_negative_error))
         for i in range(0,self.num_test_classes):
             print('\tTested {:d} {}s with {:.2f}% + {:.2f}% - {:.2f}% accuracy'.format(
                 all_guesses[i], 
                 unique_y[i],
                 100*(all_guesses[i] - wrong_guesses[i])/all_guesses[i],
-                100*(almost_correct[i]/all_guesses[i]),
-                100*(almost_wrong[i]/all_guesses[i])))
+                100*right_ratios[i],
+                100*wrong_ratios[i]))
 
     def visualize_density(self, ax, digit_index):
         if not self.has_densities:
