@@ -1,13 +1,25 @@
 from mnist import MNIST
+from galaxies import Galaxies
 from mnist_pca import MnistPca
 import numpy as np
 import matplotlib.cm as cm
-
-mnist = MNIST()
+import matplotlib.pyplot as plt
 
 def get_mnist_data(digits, num_per_digit):
+    mnist = MNIST()
     x, y = mnist.get_flattened_train_data(digits, num_per_digit)
     x_test, y_test = mnist.get_flattened_test_data(digits)
+    return DataHolder(
+        x,
+        y,
+        x_test,
+        y_test
+    )
+
+def get_galaxy_data(num_per_class):
+    galaxies = Galaxies()
+    x, y = galaxies.get_flattened_train_data(num_per_class)
+    x_test, y_test = galaxies.get_flattened_test_data()
     return DataHolder(
         x,
         y,
