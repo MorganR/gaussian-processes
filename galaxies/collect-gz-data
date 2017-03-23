@@ -1,0 +1,6 @@
+#!/bin/bash
+
+num=$1
+outputFile=$2
+
+/sqlcl.py -q "SELECT TOP ${num} p.objid, p.ra, p.dec, p.spiral, p.elliptical, p.uncertain, p.nvote, p.p_cs_debiased, p.p_el_debiased, p.p_mg, p.p_edge, p.p_acw, p.p_cw, p.p_dk, s.petroRad_g, s.petroRad_i, s.petroRad_r FROM ZooSpec AS p JOIN PhotoObj AS s ON s.objid = p.objid WHERE s.clean = 1" > ${outputFile}
