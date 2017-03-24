@@ -6,12 +6,14 @@ ellipticalOutput="${num}-ellipticals.csv"
 uncertainOutput="${num}-uncertains.csv"
 spiralEdgesOutput="${num}-spiral-edges.csv"
 ellipticalEdgesOutput="${num}-elliptical-edges.csv"
+uncertainEdgesOutput="${num}-uncertain-edges.csv"
 
 baseQuery="SELECT TOP ${num} p.objid, p.ra, p.dec, p.spiral, p.elliptical, p.uncertain, p.nvote, p.p_cs_debiased, p.p_el_debiased, p.p_mg, p.p_edge, p.p_acw, p.p_cw, p.p_dk, s.petroRad_g, s.petroRad_i, s.petroRad_r FROM ZooSpec AS p JOIN PhotoObj AS s ON s.objid = p.objid WHERE s.clean = 1"
 
-./sqlcl.py -q "${baseQuery} AND p.spiral=1 AND p.p_edge < 0.1" > ${spiralOutput}
-./sqlcl.py -q "${baseQuery} AND p.elliptical=1 AND p.p_edge < 0.1" > ${ellipticalOutput}
-./sqlcl.py -q "${baseQuery} AND p.uncertain=1 AND p.p_edge < 0.1" > ${uncertainOutput}
-./sqlcl.py -q "${baseQuery} AND p.spiral=1 AND p.p_edge > 0.5" > ${spiralEdgesOutput}
-./sqlcl.py -q "${baseQuery} AND p.elliptical=1 AND p.p_edge > 0.5" > ${ellipticalEdgesOutput}
+./sqlcl.py -q "${baseQuery} AND p.spiral=1 AND p.p_edge < 0.5" > ${spiralOutput}
+./sqlcl.py -q "${baseQuery} AND p.elliptical=1 AND p.p_edge < 0.5" > ${ellipticalOutput}
+./sqlcl.py -q "${baseQuery} AND p.uncertain=1 AND p.p_edge < 0.5" > ${uncertainOutput}
+./sqlcl.py -q "${baseQuery} AND p.spiral=1 AND p.p_edge >= 0.5" > ${spiralEdgesOutput}
+./sqlcl.py -q "${baseQuery} AND p.elliptical=1 AND p.p_edge >= 0.5" > ${ellipticalEdgesOutput}
+./sqlcl.py -q "${baseQuery} AND p.uncertain=1 AND p.p_edge >= 0.5" > ${uncertainEdgesOutput}
 
