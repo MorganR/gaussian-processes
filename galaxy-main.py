@@ -7,16 +7,21 @@ from svgp_tester import SvgpTester
 from vgp_tester import VgpTester
 from mcmc_tester import McmcTester
 
-data = get_galaxy_data(250)
+num_inducing_inputs = [100, 250]
 
-m_test = VgpTester(data, 'rbf')
-m_test.train()
-m_test.test(2000)
+num_per_class = 5000
 
-# for num_inducing_input in num_inducing_inputs:
-#     m_test = SvgpTester(data, 'm32', num_inducing_input)
-#     m_test.train()
-#     m_test.test(10000)
+data = get_galaxy_data(num_per_class)
+data = data.get_pca_data(100)
+
+# m_test = VgpTester(data, 'rbf')
+# m_test.train()
+# m_test.test()
+
+for num_inducing_input in num_inducing_inputs:
+    m_test = McmcTester(data, 'rbf', num_inducing_input, False)
+    m_test.train()
+    m_test.test()
 
 # from mpl_toolkits.mplot3d import Axes3D
 # import matplotlib.cm as cm
@@ -32,36 +37,37 @@ m_test.test(2000)
 # m_test.plot_z(axes, num_rows, num_cols)
 
 
-    # num_cols = min([len(digits), 5])
-    # num_rows = int(np.ceil(len(digits)/num_cols))
+# num_cols = 1
+# num_rows = 1
 
-    # fig, axes = plt.subplots(num_rows, num_cols)
-    # if num_rows == 1 and num_cols == 1:
-    #     data.plot_pca_data(axes, num_per_digit)
-    #     m_test.visualize_density(axes, 0)
-    #     axes.legend()
-    # elif num_rows > 1:
-    #     for r in np.arange(0, num_rows):
-    #         for col in np.arange(0, num_cols):
-    #             data.plot_pca_data(axes[r,col], 15)
-    #             m_test.visualize_density(axes[r,col], r*num_cols + col)
-    #             axes[r,col].set_title('{}'.format(digits[r*num_cols + col]))
-    # else:
-    #     for col in np.arange(0, num_cols):
-    #         data.plot_pca_data(axes[col], 15)
-    #         m_test.visualize_density(axes[col], col)
-    #         axes[col].set_title('{}'.format(digits[col]))
+# fig, axes = plt.subplots(num_rows, num_cols)
+# if num_rows == 1 and num_cols == 1:
+#     data.plot_pca_data(axes, num_per_class)
+#     m_test.plot_z(axes)
+#     m_test.visualize_density(axes, 0)
+#     axes.legend()
+# elif num_rows > 1:
+#     for r in np.arange(0, num_rows):
+#         for col in np.arange(0, num_cols):
+#             data.plot_pca_data(axes[r,col], 15)
+#             m_test.visualize_density(axes[r,col], r*num_cols + col)
+#             axes[r,col].set_title('{}'.format(r*num_cols + col))
+# else:
+#     for col in np.arange(0, num_cols):
+#         data.plot_pca_data(axes[col], 15)
+#         m_test.visualize_density(axes[col], col)
+#         axes[col].set_title('{}'.format(col))
 
-    # fig.suptitle('GP Classification Using {} Images and {} Inducing Inputs'.format(
-    #     data.y.size, m_test.inducing_inputs.shape[0]
-    # ))
-    # fig.set_size_inches(18, 8)
-    # fig.subplots_adjust(top=0.91, bottom=0.05)
-    # fig.savefig('{}-{}.png'.format(data.y.size, m_test.inducing_inputs.shape[0]))
-    # fig.suptitle('GP Classification on 2D Data\nUsing {} Images with VGP'.format(
-    #     data.y.size
-    # ))
-    # fig.set_size_inches(7, 4)
-    # fig.subplots_adjust(top=0.8, bottom=0.05)
-    # fig.savefig('vgp-{}c-{}.png'.format(len(digits), data.y.size))
-    # plt.show()
+# fig.suptitle('GP Classification of Galaxies Using {} Images\nand {} Inducing Inputs when Z was Fixed'.format(
+#     data.y.size, m_test.inducing_inputs.shape[0]
+# ))
+# fig.subplots_adjust(top=0.9, bottom=0.05)
+# fig.savefig('svgp-galaxies-{}-{}-fixed.png'.format(data.y.size, m_test.inducing_inputs.shape[0]))
+# plt.show()
+# fig.suptitle('GP Classification on 2D Data\nUsing {} Images with VGP'.format(
+#     data.y.size
+# ))
+# fig.set_size_inches(7, 4)
+# fig.subplots_adjust(top=0.8, bottom=0.05)
+# fig.savefig('svgp-{}c-{}.png'.format(len(digits), data.y.size))
+# plt.show()

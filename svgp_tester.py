@@ -3,7 +3,7 @@ import GPflow
 from model_tester import ModelTester
 
 class SvgpTester(ModelTester):
-    def __init__(self, data, kern_id, num_inducing):
+    def __init__(self, data, kern_id, num_inducing, is_z_fixed):
         self.num_classes = np.unique(data.y).size
         self.num_dimensions = data.x.shape[1]
 
@@ -31,7 +31,7 @@ class SvgpTester(ModelTester):
             likelihood=GPflow.likelihoods.MultiClass(self.num_classes),
             num_latent=self.num_classes,
             Z=self.inducing_inputs)
-        model.Z.fixed = True
+        model.Z.fixed = is_z_fixed
         super().__init__(data, model)
        
     def train(self):
@@ -43,9 +43,7 @@ class SvgpTester(ModelTester):
             self.num_dimensions,
             self.data.y.size,
             self.inducing_inputs.shape[0]
-        ) + self.kern_id + '-gpu')
+        ) + ('fixed-' if self.model.Z.fixed else 'unfixed-') + self.kern_id + '-gpu')
 
-    def plot_z(self, axes, num_rows, num_cols):
-        for r in np.arange(0, num_rows):
-            for c in np.arange(0, num_cols):
-                axes[r,c].plot(self.model.Z.value[:,0], self.model.Z.value[:,1], 'kx')
+    def plot_z(self, ax):
+        ax.plot(self.model.Z.value[:,0], self.model.Z.value[:,1], 'kx')
