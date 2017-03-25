@@ -45,11 +45,10 @@ class ModelTester():
         t_end = time.time()
         self.optimization_time = t_end-t_start
         print('Optimization completed in {} seconds'.format(self.optimization_time))
-        print(self.model.kern)
 
-    def test(self, num_test=5):
+    def test(self, num_test=0):
         # mu, var = self.model.predict_f(X_test)
-        if (num_test > self.data.y_test.size):
+        if (num_test == 0 or num_test > self.data.y_test.size):
             num_test = self.data.y_test.size
 
         p, var = self.model.predict_y(self.data.x_test[:num_test])
