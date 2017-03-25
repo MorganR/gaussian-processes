@@ -19,7 +19,7 @@ class Galaxies:
     train_images = []
     test_images = []
 
-    num_images_per_file = 1000
+    num_images_per_file = 5000
     base_files = ['spirals', 'ellipticals']
     folder = 'galaxies'
 
