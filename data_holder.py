@@ -1,18 +1,32 @@
 from mnist import MNIST
+from galaxies import Galaxies
 from mnist_pca import MnistPca
 import numpy as np
 import matplotlib.cm as cm
-
-mnist = MNIST()
+import matplotlib.pyplot as plt
 
 def get_mnist_data(digits, num_per_digit):
+    mnist = MNIST()
     x, y = mnist.get_flattened_train_data(digits, num_per_digit)
     x_test, y_test = mnist.get_flattened_test_data(digits)
     return DataHolder(
         x,
         y,
         x_test,
-        y_test
+        y_test,
+        'mnist'
+    )
+
+def get_galaxy_data(num_per_class):
+    galaxies = Galaxies()
+    x, y = galaxies.get_flattened_train_data(num_per_class)
+    x_test, y_test = galaxies.get_flattened_test_data()
+    return DataHolder(
+        x,
+        y,
+        x_test,
+        y_test,
+        'galaxies'
     )
 
 def get_rotated_mnist_Data(digits, num_per_digit):
@@ -22,11 +36,12 @@ def get_rotated_mnist_Data(digits, num_per_digit):
     return data
 
 class DataHolder():
-    def __init__(self, x, y, x_test, y_test):
+    def __init__(self, x, y, x_test, y_test, name):
         self.x = x
         self.y = y
         self.x_test = x_test
         self.y_test = y_test
+        self.name = name
 
     def get_pca_data(self, num_dimensions):
         evecs, evals = np.linalg.eigh(np.cov(self.x.T))
@@ -35,7 +50,7 @@ class DataHolder():
         _W = _W[:, :num_dimensions]
         x = (self.x - self.x.mean(0)).dot(_W)
         x_test = (self.x_test - self.x_test.mean(0)).dot(_W)
-        return DataHolder(x, self.y.copy(), x_test, self.y_test.copy())
+        return DataHolder(x, self.y.copy(), x_test, self.y_test.copy(), self.name)
 
     def plot_pca_data(self, ax, num_per_digit):
         colors = cm.rainbow(np.linspace(0, 1, np.unique(self.y).size), alpha=0.5)

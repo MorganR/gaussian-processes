@@ -7,23 +7,23 @@ from svgp_tester import SvgpTester
 from vgp_tester import VgpTester
 from mcmc_tester import McmcTester
 
-num_per_digits = [1000]
-num_inducing_inputs = [200]
+num_per_digits = [0]
+num_inducing_inputs = [50]
 
 for num_per_digit in num_per_digits:
 
     digits = np.arange(0,10)
     data = get_mnist_data(digits, num_per_digit)
-    data = data.get_pca_data(75)
+    data = data.get_pca_data(50)
 
     # m_test = VgpTester(data, 'rbf')
     # m_test.train()
     # m_test.test(10000)
 
     for num_inducing_input in num_inducing_inputs:
-        m_test = SvgpTester(data, 'm32', num_inducing_input)
+        m_test = McmcTester(data, 'rbf', num_inducing_input, is_z_fixed=False)
         m_test.train()
-        m_test.test(10000)
+        m_test.test()
 # from mpl_toolkits.mplot3d import Axes3D
 # import matplotlib.cm as cm
 # fig = plt.figure()

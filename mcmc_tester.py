@@ -3,7 +3,7 @@ import GPflow
 from model_tester import ModelTester
 
 class McmcTester(ModelTester):
-    def __init__(self, data, kern_id, num_inducing):
+    def __init__(self, data, kern_id, num_inducing, is_z_fixed):
         self.num_classes = np.unique(data.y).size
         self.num_dimensions = data.x.shape[1]
 
@@ -31,7 +31,7 @@ class McmcTester(ModelTester):
             likelihood=GPflow.likelihoods.MultiClass(self.num_classes),
             Z=self.inducing_inputs,
             num_latent=self.num_classes)
-        model.Z.fixed = True
+        model.Z.fixed = is_z_fixed
         super().__init__(data, model)
        
     def train(self):
@@ -39,4 +39,4 @@ class McmcTester(ModelTester):
         self.optimize()
         self.export('mcmc-{}c-{}d-{}i-{}z-'.format(
             self.num_classes, self.num_dimensions, self.data.y.size, self.inducing_inputs.shape[0]
-        ) + self.kern_id + '-gpu')
+        ) + ('fixed-' if self.model.Z.fixed else 'unfixed-') + self.kern_id + '-gpu')
