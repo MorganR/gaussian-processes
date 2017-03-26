@@ -6,8 +6,9 @@ from data_holder import DataHolder, get_mnist_data, get_galaxy_data
 from svgp_tester import SvgpTester
 from vgp_tester import VgpTester
 from mcmc_tester import McmcTester
+from galaxy_tester import GalaxyTester
 
-num_inducing_inputs = [100, 250]
+num_inducing_inputs = [250]
 
 num_per_class = 5000
 
@@ -19,9 +20,11 @@ data = data.get_pca_data(100)
 # m_test.test()
 
 for num_inducing_input in num_inducing_inputs:
-    m_test = McmcTester(data, 'rbf', num_inducing_input, False)
+    m_test = SvgpTester(data, 'rbf', num_inducing_input, False)
     m_test.train()
     m_test.test()
+    g_test = GalaxyTester(m_test.data, m_test.model)
+    g_test.test()
 
 # from mpl_toolkits.mplot3d import Axes3D
 # import matplotlib.cm as cm

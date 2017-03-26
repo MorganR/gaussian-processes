@@ -54,10 +54,10 @@ class ModelTester():
         p, var = self.model.predict_y(self.data.x_test[:num_test])
 
         Y_guess = np.argmax(p, axis=1)
-        all_guesses = np.zeros(self.num_test_classes, dtype=np.int32)
-        wrong_guesses = np.zeros(self.num_test_classes, dtype=np.int32)
-        almost_correct = np.zeros(self.num_test_classes, dtype=np.int32)
-        almost_wrong = np.zeros(self.num_test_classes, dtype=np.int32)
+        all_guesses = np.zeros(self.num_classes, dtype=np.int32)
+        wrong_guesses = np.zeros(self.num_classes, dtype=np.int32)
+        almost_correct = np.zeros(self.num_classes, dtype=np.int32)
+        almost_wrong = np.zeros(self.num_classes, dtype=np.int32)
         unique_y = np.sort(np.unique(self.data.y))
         for i in range(0, num_test):
             Y_true = self.data.y_test[i]
