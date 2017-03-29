@@ -29,11 +29,12 @@ class ModelTester():
         self.optimization_time = model_shaped_thing.optimization_time
 
     def export(self, title):
-        filename = 'models/'+self.data.name+'/'+title+'.pkl'
+        base_filename = 'models/'+self.data.name+'/'+title
+        filename = base_filename+'.pkl'
         num_existing = 0
         while os.path.isfile(filename):
             num_existing += 1
-            filename = 'models/'+title+'-v{}.pkl'.format(num_existing)
+            filename = base_filename+'-v{}.pkl'.format(num_existing)
         with open(filename, 'wb') as output:
             pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
