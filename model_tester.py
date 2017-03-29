@@ -61,34 +61,39 @@ class ModelTester():
         unique_y = np.sort(np.unique(self.data.y))
         for i in range(0, num_test):
             Y_true = self.data.y_test[i]
-            Y_idx = np.argwhere(unique_y==Y_true)
-            Y_idx = Y_idx[0]
-            all_guesses[Y_idx] += 1
-            true_prob = p[i, Y_idx]
-            true_var = var[i, Y_idx]
-            if (Y_guess[i] != Y_true):
-                wrong_guesses[Y_idx] += 1
-                highest_prob = p[i, Y_guess[i]]
-                if highest_prob < (true_prob + true_var):
-                    almost_correct[Y_idx] += 1
-            else: # guess is correct
-                if (np.any(p[i,np.arange(self.num_test_classes)!=Y_idx] > (true_prob - true_var))):
-                    almost_wrong[Y_idx] += 1
+            if Y_true in unique_y:
+                Y_idx = np.argwhere(unique_y==Y_true)
+                Y_idx = Y_idx[0]
+                all_guesses[Y_idx] += 1
+                true_prob = p[i, Y_idx]
+                true_var = var[i, Y_idx]
+                if (Y_guess[i] != Y_true):
+                    wrong_guesses[Y_idx] += 1
+                    highest_prob = p[i, Y_guess[i]]
+                    if highest_prob < (true_prob + true_var):
+                        almost_correct[Y_idx] += 1
+                else: # guess is correct
+                    if (np.any(p[i,np.arange(self.num_classes)!=Y_idx] > (true_prob - true_var))):
+                        almost_wrong[Y_idx] += 1
+
+        print('all:', all_guesses)
+        print('wrong:', wrong_guesses)
 
         self.right_ratios = almost_correct/all_guesses
         self.wrong_ratios = almost_wrong/all_guesses
-        self.accuracy_ratios = (num_test - wrong_guesses)/num_test
-        self.total_accuracy = (num_test-wrong_guesses.sum())/num_test
-        self.total_positive_error = np.sqrt(np.sum((all_guesses*self.right_ratios/num_test)**2))
-        self.total_negative_error = np.sqrt(np.sum((all_guesses*self.wrong_ratios/num_test)**2))
+        num_test_for_accuracy = np.sum(all_guesses)
+        self.accuracy_ratios = (all_guesses - wrong_guesses)/all_guesses
+        self.total_accuracy = (num_test_for_accuracy-wrong_guesses.sum())/num_test_for_accuracy
+        self.total_positive_error = np.sqrt(np.sum((all_guesses*self.right_ratios/num_test_for_accuracy)**2))
+        self.total_negative_error = np.sqrt(np.sum((all_guesses*self.wrong_ratios/num_test_for_accuracy)**2))
 
         print('Tested against {} digits with {:.2f}% + {:.2f}% - {:.2f}% accuracy'.format(
-            num_test, 100*(num_test-wrong_guesses.sum())/num_test, 100*self.total_positive_error, 100*self.total_negative_error))
-        for i in range(0,self.num_test_classes):
+            num_test, 100*self.total_accuracy, 100*self.total_positive_error, 100*self.total_negative_error))
+        for i in range(0,self.num_classes):
             print('\tTested {:d} {}s with {:.2f}% + {:.2f}% - {:.2f}% accuracy'.format(
                 all_guesses[i], 
                 unique_y[i],
-                100*(all_guesses[i] - wrong_guesses[i])/all_guesses[i],
+                100*self.accuracy_ratios[i],
                 100*self.right_ratios[i],
                 100*self.wrong_ratios[i]))
 
