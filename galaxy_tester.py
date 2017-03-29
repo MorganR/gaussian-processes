@@ -1,6 +1,7 @@
 import numpy as np
 from galaxies import Galaxies
 from galaxy_meta import GalaxyMeta
+import matplotlib.pyplot as plt
 
 class GalaxyTester():
     def __init__(self, data, model):
@@ -30,6 +31,11 @@ class GalaxyTester():
             [[],[]]
             ]
         self.prob = [
+            [[],[]],
+            [[],[]],
+            [[],[]]
+        ]
+        self.variances = [
             [[],[]],
             [[],[]],
             [[],[]]
@@ -80,6 +86,7 @@ class GalaxyTester():
                 guess_idx = self.Y_guess == guess
                 self.idx[real][guess] = real_idx & guess_idx
                 self.prob[real][guess] = self.p[self.idx[real][guess],:]
+                self.variances[real][guess] = self.var[self.idx[real][guess],:]
                 self.objid[real][guess] = self.test_ids[self.idx[real][guess]]
                 for objid in self.objid[real][guess]:
                     spiral, elliptical, unc, n, ra, dec, cs, el, merge, edge, acw, cw, disk = self.meta.find_by_id(objid, real)
@@ -90,8 +97,8 @@ class GalaxyTester():
                     self.disk[real][guess].append(disk)
                     self.merge[real][guess].append(merge)
                     self.acw[real][guess].append(acw)
-                print('For real: {} guess: {}:'.format(
-                    real, guess
+                print('For real: {} guess: {} ({} images):'.format(
+                    real, guess, len(self.nvote[real][guess])
                 ))
                 print('\tprob 0: {} ({})'.format(
                     np.average(self.prob[real][guess][:,0]),
@@ -113,6 +120,14 @@ class GalaxyTester():
                     np.average(self.el[real][guess]),
                     np.std(self.el[real][guess])
                 ))
+                print('\tspiral: {} ({})'.format(
+                    np.average(self.spiral[real][guess]),
+                    np.std(self.spiral[real][guess])
+                ))
+                print('\telliptical: {} ({})'.format(
+                    np.average(self.elliptical[real][guess]),
+                    np.std(self.elliptical[real][guess])
+                ))
                 print('\tedge: {} ({})'.format(
                     np.average(self.edge[real][guess]),
                     np.std(self.edge[real][guess])
@@ -129,36 +144,107 @@ class GalaxyTester():
                     np.average(self.acw[real][guess]),
                     np.std(self.acw[real][guess])
                 ))
-                
+
+
+        labels = {0: 'Spiral', 1:'Elliptical', 2:'Uncertain'}
         
-        # right_ratios = almost_correct/all_guesses
-        # wrong_ratios = almost_wrong/all_guesses
-        # accuracy_ratios = (num_test - wrong_guesses)/num_test
-        # total_accuracy = (num_test-wrong_guesses.sum())/num_test
-        # total_positive_error = np.sqrt(np.sum((all_guesses*right_ratios/num_test)**2))
-        # total_negative_error = np.sqrt(np.sum((all_guesses*wrong_ratios/num_test)**2))
+        real = 0
+        not_real = 1
+        probs = 0
+        votes = self.cs
 
-        # print('Tested against {} digits with {:.2f}% + {:.2f}% - {:.2f}% accuracy'.format(
-        #     num_test, 100*(num_test-wrong_guesses.sum())/num_test, 100*total_positive_error, 100*total_negative_error))
-        # for i in range(0,num_test_classes):
-        #     print('\tTested {:d} {}s with {:.2f}% + {:.2f}% - {:.2f}% accuracy'.format(
-        #         all_guesses[i], 
-        #         unique_y[i],
-        #         100*(all_guesses[i] - wrong_guesses[i])/all_guesses[i],
-        #         100*right_ratios[i],
-        #         100*wrong_ratios[i]))
+        plt.errorbar(self.prob[real][real][:,probs].flatten()*100,
+            np.reshape(votes[real][real], len(votes[real][real]))*100, 
+            xerr=self.variances[real][real][:,probs].flatten()*100,
+            errorevery=10,
+            fmt='.', label=labels[real])
+        plt.errorbar(self.prob[real][not_real][:,probs].flatten()*100,
+            np.reshape(votes[real][not_real], len(votes[real][not_real]))*100,
+            xerr=self.variances[real][not_real][:,probs].flatten()*100,
+            errorevery=10,
+            fmt='.', label=labels[not_real])
+        plt.title('Comparison of GP Model Classification Probability'+
+            '\nWith with Galaxy Zoo Votes for ' + labels[real] + ' Galaxies')
+        plt.xlabel('GP Model ' + labels[probs] + ' Probability (%)')
+        plt.ylabel('Galaxy Zoo ' + labels[real] + ' Votes (%)')
+        fig = plt.gcf()
+        fig.savefig(labels[real] + '-' + labels[probs]+'.eps')
+        plt.legend(loc='lower right')
+        plt.show()
 
-    # def _update_accuracy(i, y_true):
-    #     Y_idx = np.argwhere(self.unique_y==y_true)
-    #     Y_idx = Y_idx[0]
-    #     self.all_guesses[Y_idx] += 1
-    #     true_prob = self.p[i, Y_idx]
-    #     true_var = self.var[i, Y_idx]
-    #     if (self.Y_guess[i] != y_true):
-    #         self.wrong_guesses[Y_idx] += 1
-    #         highest_prob = self.p[i, self.Y_guess[i]]
-    #         if highest_prob < (true_prob + true_var):
-    #             self.almost_correct[Y_idx] += 1
-    #     else: # guess is correct
-    #         if (np.any(self.p[i,np.arange(num_test_classes)!=Y_idx] > (true_prob - true_var))):
-    #             self.almost_wrong[Y_idx] += 1
+        # plt.plot(self.prob[0][0][:,1].flatten()*100, np.reshape(self.el[0][0], len(self.el[0][0]))*100, '.', label='Spiral')
+        # plt.plot(self.prob[0][1][:,1].flatten()*100, np.reshape(self.el[0][1], len(self.el[0][1]))*100, '.', label='Elliptical')
+        # plt.title('Comparison of GP Model Classification Probability'+
+        #     '\nWith with Galaxy Zoo Votes for Elliptical Galaxies')
+        # plt.xlabel('GP Model Elliptical Probability (%)')
+        # plt.ylabel('Galaxy Zoo Elliptical Votes (%)')
+        # fig = plt.gcf()
+        # fig.savefig('spiral-elliptical.eps')
+        # plt.legend()
+        # plt.show()
+
+        # plt.plot(self.prob[1][0][:,0].flatten()*100, np.reshape(self.cs[1][0], len(self.cs[1][0]))*100, '.', label='Spiral')
+        # plt.plot(self.prob[1][1][:,0].flatten()*100, np.reshape(self.cs[1][1], len(self.cs[1][1]))*100, '.', label='Elliptical')
+        # plt.title('Comparison of GP Model Classification Probability'+
+        #     '\nWith with Galaxy Zoo Votes for Spiral Galaxies')
+        # plt.xlabel('GP Model Spiral Probability (%)')
+        # plt.ylabel('Galaxy Zoo Spiral Votes (%)')
+        # fig = plt.gcf()
+        # fig.savefig('elliptical-spiral.eps')
+        # plt.legend()
+        # plt.show()
+
+        real = 1
+        not_real = 0
+        probs = 1
+        votes = self.el
+
+        plt.errorbar(self.prob[real][real][:,probs].flatten()*100,
+            np.reshape(votes[real][real], len(votes[real][real]))*100, 
+            xerr=self.variances[real][real][:,probs].flatten()*100,
+            errorevery=10,
+            fmt='.', label=labels[real])
+        plt.errorbar(self.prob[real][not_real][:,probs].flatten()*100,
+            np.reshape(votes[real][not_real], len(votes[real][not_real]))*100,
+            xerr=self.variances[real][not_real][:,probs].flatten()*100,
+            errorevery=10,
+            fmt='.', label=labels[not_real])
+        plt.title('Comparison of GP Model Classification Probability'+
+            '\nWith with Galaxy Zoo Votes for ' + labels[real] + ' Galaxies')
+        plt.xlabel('GP Model ' + labels[probs] + ' Probability (%)')
+        plt.ylabel('Galaxy Zoo ' + labels[real] + ' Votes (%)')
+        fig = plt.gcf()
+        fig.savefig(labels[real] + '-' + labels[probs]+'.eps')
+        plt.legend(loc='lower right')
+        plt.show()
+        
+        real = 2
+        not_probs = 0
+        probs = 1
+        votes = self.el
+
+        plt.errorbar(self.prob[real][probs][:,probs].flatten()*100,
+            np.reshape(votes[real][probs], len(votes[real][probs]))*100, 
+            xerr=self.variances[real][probs][:,probs].flatten()*100,
+            errorevery=10,
+            fmt='.', label=labels[real])
+        plt.errorbar(self.prob[real][not_probs][:,probs].flatten()*100,
+            np.reshape(votes[real][not_probs], len(votes[real][not_probs]))*100,
+            xerr=self.variances[real][not_probs][:,probs].flatten()*100,
+            errorevery=10,
+            fmt='.', label=labels[not_probs])
+        plt.title('Comparison of GP Model Classification Probability'+
+            '\nWith with Galaxy Zoo Votes for ' + labels[real] + ' Galaxies')
+        plt.xlabel('GP Model ' + labels[probs] + ' Probability (%)')
+        plt.ylabel('Galaxy Zoo ' + labels[real] + ' Votes (%)')
+        fig = plt.gcf()
+        fig.savefig(labels[real] + '-' + labels[probs]+'.eps')
+        plt.legend(loc='lower right')
+        plt.show()
+
+    # def plot_ratios(real, numerator, title):
+    #     labels = {0: 'Spiral', 1:'Elliptical', 2:'Uncertain'}
+    #     denom = 0
+    #     if (numerator == 0):
+    #         denom = 1
+    #     plt.plot(self.prob[real][real]/self.prob[real][])
