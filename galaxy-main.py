@@ -26,6 +26,15 @@ for num_inducing_input in num_inducing_inputs:
     g_test = GalaxyTester(m_test.data, m_test.model)
     g_test.test()
 
+
+# filename = 'svgp-2c-100d-10000i-250z-unfixed-rbf-gpu-v1'
+# m_test = ModelTester(DataHolder([0], [1], [0], [1], 'dummy'), None)
+# m_test.import_old(filename)
+# print(m_test.optimization_time)
+# m_test.test()
+# g_test = GalaxyTester(m_test.data, m_test.model)
+# g_test.test()
+
 # from mpl_toolkits.mplot3d import Axes3D
 # import matplotlib.cm as cm
 # fig = plt.figure()
