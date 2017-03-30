@@ -13,7 +13,7 @@ class AccuracyVisualizer():
 
         i = 0
         for filename in filenames:
-            m_test = ModelTester(DataHolder([0], [1], [0], [1]), None)
+            m_test = ModelTester(DataHolder([0], [1], [0], [1], ''), None)
             m_test.import_old(filename)
             m_test.test()
             self.accuracies[i] = m_test.total_accuracy
@@ -36,7 +36,7 @@ class AccuracyVisualizer():
         ax.set_title(title)
         ax.set_xlabel('Training Time (s)')
         ax.set_ylabel('Accuracy (%)')
-
+        
     def __str__(self):
         string = ''
         for i in range(0, len(self.x)):
